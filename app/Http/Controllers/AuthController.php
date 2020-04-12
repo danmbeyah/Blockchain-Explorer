@@ -3,6 +3,8 @@ namespace App\Http\Controllers;
 
 use App\User;
 
+use JWTAuth;
+
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -24,12 +26,17 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        $jwt_token = null;
+ 
+        if (!$token = JWTAuth::attempt($credentials)) {
+            return response()->json([
+                'error' => 'Invalid Email or Password',
+            ], 401);
         }
 
         return $this->respondWithToken($token);
     }
+
 
     public function logout()
     {
@@ -45,5 +52,16 @@ class AuthController extends Controller
             'token_type'   => 'bearer',
             'expires_in'   => auth()->factory()->getTTL() * 60
         ]);
+    }
+
+    public function getAuthUser(Request $request)
+    {
+        $this->validate($request, [
+            'token' => 'required'
+        ]);
+ 
+        $user = JWTAuth::authenticate($request->token);
+ 
+        return response()->json(['user' => $user]);
     }
 }
