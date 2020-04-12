@@ -4,8 +4,46 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "148364d90b8b5dd8a7af426e4261dbdd",
+    "content-hash": "0f460e30ec9bb5e92178cc39be0624ab",
     "packages": [
+        {
+            "name": "Blockchain/Blockchain",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/danmbeyah/blockchain.git",
+                "reference": "be194230ed4dd97d5ae84bcf67a4c90f930566b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/danmbeyah/blockchain/zipball/be194230ed4dd97d5ae84bcf67a4c90f930566b5",
+                "reference": "be194230ed4dd97d5ae84bcf67a4c90f930566b5",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Blockchain\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Blockchain API client library",
+            "homepage": "https://github.com/blockchain/api-v1-client-php",
+            "keywords": [
+                "bitcoin",
+                "blockchain"
+            ],
+            "support": {
+                "source": "https://github.com/danmbeyah/blockchain/tree/master"
+            },
+            "time": "2017-06-15T09:46:52+00:00"
+        },
         {
             "name": "asm89/stack-cors",
             "version": "1.3.0",
@@ -5435,7 +5473,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "blockchain/blockchain": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
