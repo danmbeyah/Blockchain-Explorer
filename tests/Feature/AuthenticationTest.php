@@ -15,9 +15,10 @@ class AuthenticationTest extends TestCase
         parent::setUp();
 
         $user = new User([
-             'email'    => 'test@email.com',
-             'password' => '123456'
-         ]);
+            'name'    => 'Test User', 
+            'email'    => 'test@email.com',
+            'password' => '123456'
+        ]);
 
         $user->save();
     }
@@ -26,6 +27,7 @@ class AuthenticationTest extends TestCase
     public function it_will_register_a_user()
     {
         $response = $this->post('api/register', [
+            'name'    => 'Test User',
             'email'    => 'test2@email.com',
             'password' => '123456'
         ]);

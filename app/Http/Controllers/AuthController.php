@@ -9,14 +9,15 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $user = User::create([
-             'email'    => $request->email,
-             'password' => $request->password,
-         ]);
+		$user = User::create([
+			'name'  => $request->name,
+			'email'    => $request->email,
+			'password' => $request->password,
+		]);
 
-        $token = auth()->login($user);
+		$token = auth()->login($user);
 
-        return $this->respondWithToken($token);
+		return $this->respondWithToken($token);
     }
 
     public function login()
