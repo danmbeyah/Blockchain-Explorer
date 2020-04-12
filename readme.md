@@ -14,3 +14,5 @@ Implements the following:
 ## To Do
 1. Add custom make file for easy terminal commands
 1. Add JSON-specific exception handling
+1. Fix Deprecation warning: require.Blockchain/Blockchain is invalid.
+1. Add JSON API spec
