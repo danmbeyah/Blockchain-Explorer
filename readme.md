@@ -15,6 +15,7 @@ Implements the following:
 1. Clone repo and run composer install
 1. php artisan migrate to run migrations
 1. php artisan serve to start the app
+1. Run wallet service locally (https://github.com/blockchain/service-my-wallet-v3 and expose service url)
 
 ## Available endpoints
 1. POST: http://localhost:8000/api/register  [name,email,password]
