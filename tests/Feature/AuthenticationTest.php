@@ -24,7 +24,7 @@ class AuthenticationTest extends TestCase
     }
 
     /** @test */
-    public function it_will_register_a_user()
+    public function registerUser()
     {
         $response = $this->post('api/register', [
             'name'    => 'Test User',
@@ -40,7 +40,7 @@ class AuthenticationTest extends TestCase
     }
 
     /** @test */
-    public function it_will_log_a_user_in()
+    public function loginUser()
     {
         $response = $this->post('api/login', [
             'email'    => 'test@email.com',
@@ -55,7 +55,7 @@ class AuthenticationTest extends TestCase
     }
 
     /** @test */
-    public function it_will_not_log_an_invalid_user_in()
+    public function loginInvalidUser()
     {
         $response = $this->post('api/login', [
             'email'    => 'test@email.com',
