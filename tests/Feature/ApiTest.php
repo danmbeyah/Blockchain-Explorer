@@ -14,6 +14,7 @@ class ApiTest extends TestCase
 
     protected $user;
     protected $token;
+    protected $wallet_guid;
 
     public function setUp(): void
     {
@@ -33,6 +34,7 @@ class ApiTest extends TestCase
         ]);
 
         $this->token = $response->getData()->access_token;
+        $this->wallet_guid = null;
     }
 
     /** @test */
@@ -45,13 +47,15 @@ class ApiTest extends TestCase
             'Authorization' => 'Bearer ' . $this->token
         ]);
 
+        $this->wallet_guid = $response->getData()->data->guid;
+
         $response->assertStatus(200);
     }
 
     /** @test */
     public function getWallet()
     {
-        $response = $this->get('api/wallet/39997efa-c2ab-4e55-85ba-6a190a77d0f5', [
+        $response = $this->get('api/wallet/' . $this->wallet_guid, [
             'pass_phrase' => 'Wrong pass phrase',
             'Authorization' => 'Bearer ' . $this->token
         ]);
