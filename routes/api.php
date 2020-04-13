@@ -24,6 +24,9 @@ Route::post('/logout', 'AuthController@logout');
 
 //Protected routes 
 Route::group(['middleware' => 'auth.jwt'], function () {
-    Route::get('coins', 'ApiController@getCoins');
-    Route::get('coins/{id}', 'ApiController@getCoin');
+    Route::get('/coins', 'ApiController@getCoins');
+    Route::get('/coins/{id}', 'ApiController@getCoin');
+
+    Route::post('/wallet', 'ApiController@createWallet');
+    Route::get('/wallet/{id}', 'ApiController@getWallet');
 });

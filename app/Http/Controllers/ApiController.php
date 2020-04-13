@@ -16,17 +16,24 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
+
+use Blockchain\Blockchain;
  
 class ApiController extends Controller
 {
 	protected $user;
 
     protected $client;
+
+    protected $blockchain;
 	 
 	public function __construct()
 	{
 	    $this->user = JWTAuth::parseToken()->authenticate();
         $this->client = new Client(['base_uri' => 'https://api.coingecko.com/api/v3/']);
+        $this->blockchain = new Blockchain('My_API_Key');
+        //Move url to env
+        $this->blockchain->setServiceUrl('http://localhost:3000');
 	}
 
     public function getCoins(Request $request)
@@ -64,6 +71,57 @@ class ApiController extends Controller
                 ]
             ],
             $responses['coin_data']['value']->getStatusCode()
+        );
+    }
+
+    public function createWallet(Request $request)
+    {
+        //ToDo: Introduce entropy to improve passphrase security
+        $pass_phrase = $request->pass_phrase;
+
+        try {
+            $wallet = $this->blockchain->Create->create($pass_phrase, $request->email, $request->label);
+        } catch (Blockchain_ApiError $e) {
+            return $e->getMessage();
+        }
+
+        return response()->json([
+                'data' => $wallet
+            ],
+            200
+        );
+    }
+
+    public function getWallet($id, $wallet_pass_phrase = "This is a pass phrase")
+    {
+        if(is_null($id) || is_null($wallet_pass_phrase)) {
+                return response()->json([
+                    'error' => 'Please enter a wallet ID and pass phrase'
+                ],
+                400
+            );
+        }
+
+        try {
+            $this->blockchain->Wallet->credentials($id, $wallet_pass_phrase);
+        } catch (Blockchain_ApiError $e) {
+            return $e->getMessage();
+        }
+
+        $addresses = $this->blockchain->Wallet->getAddresses();
+        
+        $total_balance = 0;
+        foreach ($addresses as $addresses) {
+            $total_balance = bcadd($total_balance, $addresses->balance, 8);
+        }
+
+        return response()->json([
+                'data' => [
+                    'addresses' => $addresses,
+                    'total_balance' => $total_balance
+                ]
+            ],
+            200
         );
     }
  
