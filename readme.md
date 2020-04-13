@@ -7,7 +7,22 @@ Implements the following:
 1. JWT authentication
 1. Laravel JSON API (LJA)
 1. MYSQL DB
-1. Route versioning
+
+## Outcome
+1. I created a wallet and used the pass phrase and wallet ID to login on Blockchain.com.
+
+## Set up
+1. Clone repo and run composer install
+1. php artisan migrate to run migrations
+1. php artisan serve to start the app
+
+## Available endpoints
+1. POST: http://localhost:8000/api/register  [name,email,password]
+1. POST: http://localhost:8000/api/login [email,password]
+1. GET: http://localhost:8000/api/coins [fetch list of crypto currencies from Coin Gecko]
+1. GET: http://localhost:8000/api/coins/ethereum  [Get coin data and ticker data]
+1. POST: http://localhost:8000/api/wallet  [email,label,pass_phrase]
+1. GET: http://localhost:8000/api/wallet/39997efa-c2ab-4e55-85ba-6a190a77d0f5  [39997efa-c2ab-4e55-85ba-6a190a77d0f5 is the wallet ID]
 
 ## Tests
 1. vendor/bin/phpunit
