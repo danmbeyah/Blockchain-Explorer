@@ -30,10 +30,11 @@ class ApiController extends Controller
 	public function __construct()
 	{
 	    $this->user = JWTAuth::parseToken()->authenticate();
-        $this->client = new Client(['base_uri' => 'https://api.coingecko.com/api/v3/']);
+        $this->client = new Client(['base_uri' => env('COINGECKO_BASE_URL')]);
         $this->blockchain = new Blockchain('My_API_Key');
-        //Move url to env
-        $this->blockchain->setServiceUrl('http://localhost:3000');
+        
+        $walletServiceUrl = env('WALLET_SERVICE_URL');
+        $this->blockchain->setServiceUrl($walletServiceUrl);
 	}
 
     public function getCoins(Request $request)
@@ -92,8 +93,11 @@ class ApiController extends Controller
         );
     }
 
-    public function getWallet($id, $wallet_pass_phrase = "This is a pass phrase")
+    public function getWallet($id = null, $wallet_pass_phrase = null)
     {
+        $id = $id ?? env('WALLET_PASS_PHRASE');
+        $wallet_pass_phrase = $wallet_pass_phrase ?? env('WALLET_GUID');
+
         if(is_null($id) || is_null($wallet_pass_phrase)) {
                 return response()->json([
                     'error' => 'Please enter a wallet ID and pass phrase'
