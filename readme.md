@@ -23,7 +23,8 @@ Implements the following:
 1. GET: http://localhost:8000/api/coins [fetch list of crypto currencies from Coin Gecko]
 1. GET: http://localhost:8000/api/coins/ethereum  [Get coin data and ticker data]
 1. POST: http://localhost:8000/api/wallet  [email,label,pass_phrase]
-1. GET: http://localhost:8000/api/wallet/39997efa-c2ab-4e55-85ba-6a190a77d0f5  [39997efa-c2ab-4e55-85ba-6a190a77d0f5 is the wallet ID]
+1. GET: http://localhost:8000/api/wallet/39997efa-c2ab-4e55-85ba-6a190a77wxyz  [39997efa-c2ab-4e55-85ba-6a190a77wxyz is the wallet ID]
+1. GET: http://localhost:8000/api/address/1Ct1qTc3eUhLJSC7arRbG7Aq6qqXRCKCFN/balance
 
 ## Tests
 1. vendor/bin/phpunit
@@ -33,4 +34,3 @@ Implements the following:
 1. Add JSON-specific exception handling
 1. Fix Deprecation warning: require.Blockchain/Blockchain is invalid.
 1. Add JSON API spec
-1. Move crypto configs to .env
