@@ -37,6 +37,29 @@ class ApiController extends Controller
         $this->blockchain->setServiceUrl($walletServiceUrl);
 	}
 
+    private function validateAccess($wallet_guid = null, $wallet_pass_phrase = null)
+    {
+        $wallet_guid = $wallet_guid ?? env('WALLET_GUID');
+        $wallet_pass_phrase = $wallet_pass_phrase ?? env('WALLET_PASS_PHRASE');
+
+        if(is_null($wallet_guid) || is_null($wallet_pass_phrase)) {
+                return response()->json([
+                    'error' => 'Please enter a wallet ID and pass phrase'
+                ],
+                400
+            );
+        }
+
+        //Set wallet credentials
+        try {
+            $this->blockchain->Wallet->credentials($wallet_guid, $wallet_pass_phrase);
+        } catch (Blockchain_ApiError $e) {
+            return $e->getMessage();
+        }
+
+        return $this;
+    }
+
     public function getCoins(Request $request)
     {
         try {
@@ -93,27 +116,21 @@ class ApiController extends Controller
         );
     }
 
-    public function getWallet($id = null, $wallet_pass_phrase = null)
+    public function getWallet(Request $request)
     {
-        $id = $id ?? env('WALLET_PASS_PHRASE');
-        $wallet_pass_phrase = $wallet_pass_phrase ?? env('WALLET_GUID');
+        $wallet_guid = $request->wallet_guid ?? null;
+        $wallet_pass_phrase = $request->pass_phrase ?? null;
 
-        if(is_null($id) || is_null($wallet_pass_phrase)) {
-                return response()->json([
-                    'error' => 'Please enter a wallet ID and pass phrase'
-                ],
-                400
-            );
-        }
+        $this->validateAccess($wallet_guid, $wallet_pass_phrase);
 
+        //Get wallet addresses
         try {
-            $this->blockchain->Wallet->credentials($id, $wallet_pass_phrase);
+            $addresses = $this->blockchain->Wallet->getAddresses();
         } catch (Blockchain_ApiError $e) {
             return $e->getMessage();
         }
-
-        $addresses = $this->blockchain->Wallet->getAddresses();
         
+        //Sum wallet addresses balances 
         $total_balance = 0;
         foreach ($addresses as $addresses) {
             $total_balance = bcadd($total_balance, $addresses->balance, 8);
@@ -124,6 +141,26 @@ class ApiController extends Controller
                     'addresses' => $addresses,
                     'total_balance' => $total_balance
                 ]
+            ],
+            200
+        );
+    }
+
+    public function getAddressBalance($address, Request $request)
+    {
+        $wallet_guid = $request->wallet_guid ?? null;
+        $wallet_pass_phrase = $request->pass_phrase ?? null;
+
+        $this->validateAccess($wallet_guid, $wallet_pass_phrase);
+
+        try {
+            $balance = $this->blockchain->Wallet->getAddressBalance($address);
+        } catch (Blockchain_ApiError $e) {
+            return $e->getMessage();
+        }
+
+        return response()->json([
+                'data' => $balance
             ],
             200
         );

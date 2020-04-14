@@ -29,4 +29,5 @@ Route::group(['middleware' => 'auth.jwt'], function () {
 
     Route::post('/wallet', 'ApiController@createWallet');
     Route::get('/wallet/{id}', 'ApiController@getWallet');
+    Route::get('/address/{address}/balance', 'ApiController@getAddressBalance');
 });
