@@ -105,11 +105,15 @@ class ApiController extends Controller
 
     public function createWallet(Request $request)
     {
-        //ToDo: Introduce entropy to improve passphrase security
-        $pass_phrase = $request->pass_phrase;
-
         try {
-            $wallet = $this->blockchain->Create->create($pass_phrase, $request->email, $request->label);
+            if (isset($request->private_key)) {
+                $bip39 = new Bip39('en');
+                $entropy = $bip39->decode($request->private_key);
+                $priv_hex = (string) $entropy;
+                $wallet = $this->blockchain->Create->createWithKey($request->password, $priv_hex, $request->email, $request->label);
+            } else {
+                $wallet = $this->blockchain->Create->create($request->password, $request->email, $request->label);
+            }
         } catch (Blockchain_ApiError $e) {
             return $e->getMessage();
         }
