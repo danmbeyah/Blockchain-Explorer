@@ -18,13 +18,13 @@ Implements the following:
 1. Run wallet service locally (https://github.com/blockchain/service-my-wallet-v3 and expose service url)
 
 ## Available endpoints
-1. POST: http://localhost:8000/api/register  [name,email,password]
-1. POST: http://localhost:8000/api/login [email,password]
+1. POST: http://localhost:8000/api/register  Body:{name,email,password}
+1. POST: http://localhost:8000/api/login Body:{email,password}
 1. GET: http://localhost:8000/api/coins [fetch list of crypto currencies from Coin Gecko]
 1. GET: http://localhost:8000/api/coins/ethereum  [Get coin data and ticker data]
-1. POST: http://localhost:8000/api/wallet  [email,label,pass_phrase]
-1. GET: http://localhost:8000/api/wallet/39997efa-c2ab-4e55-85ba-6a190a77wxyz  [39997efa-c2ab-4e55-85ba-6a190a77wxyz is the wallet ID]
-1. GET: http://localhost:8000/api/address/1Ct1qTc3eUhLJSC7arRbG7Aq6qqXRCKCFN/balance
+1. POST: http://localhost:8000/api/wallet  Body:{email,label,pass_phrase}
+1. GET: http://localhost:8000/api/wallet/{wallet_id}
+1. GET: http://localhost:8000/api/wallet/{wallet_id}/address/{address}/balance
 
 ## Tests
 1. vendor/bin/phpunit
