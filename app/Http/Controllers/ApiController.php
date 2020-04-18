@@ -18,6 +18,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 
 use Blockchain\Blockchain;
+
+use Blocker\Bip39\Bip39;
+use Blocker\Bip39\Util\Entropy;
+
+use Exception;
  
 class ApiController extends Controller
 {
@@ -161,6 +166,29 @@ class ApiController extends Controller
 
         return response()->json([
                 'data' => $balance
+            ],
+            200
+        );
+    }
+
+    public function generatePrivateKey(Request $request)
+    {
+        $bip39 = new Bip39('en');
+
+        if (true) {
+            //Generate 256-bit hexadecimal string
+            $hex = Entropy::random(128);
+
+            $entropy = new Entropy($hex);
+
+            $wordSequence = $bip39->setEntropy($entropy)->encode();
+        }
+
+        return response()->json([
+                'data' => [
+                    'private_key_hex' => (string) $bip39->decode($wordSequence),
+                    'private_key_sequence' => $wordSequence
+                ]
             ],
             200
         );

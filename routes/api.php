@@ -24,10 +24,15 @@ Route::post('/logout', 'AuthController@logout');
 
 //Protected routes 
 Route::group(['middleware' => 'auth.jwt'], function () {
+	//Coins Routes
     Route::get('/coins', 'ApiController@getCoins');
     Route::get('/coins/{id}', 'ApiController@getCoin');
 
+    //Wallet Routes
     Route::post('/wallet', 'ApiController@createWallet');
     Route::get('/wallet/{id}', 'ApiController@getWallet');
-    Route::get('/address/{address}/balance', 'ApiController@getAddressBalance');
+    Route::get('/wallet/{id}/address/{address}/balance', 'ApiController@getAddressBalance');
+
+    //Keys
+    Route::post('/key', 'ApiController@generatePrivateKey');
 });
