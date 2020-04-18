@@ -173,16 +173,16 @@ class ApiController extends Controller
 
     public function generatePrivateKey(Request $request)
     {
+        $bits = (int) $request->bits ?? 128;
+
         $bip39 = new Bip39('en');
 
-        if (true) {
-            //Generate 256-bit hexadecimal string
-            $hex = Entropy::random(128);
+        //Generate 256-bit hexadecimal string
+        $hex = Entropy::random($bits);
 
-            $entropy = new Entropy($hex);
+        $entropy = new Entropy($hex);
 
-            $wordSequence = $bip39->setEntropy($entropy)->encode();
-        }
+        $wordSequence = $bip39->setEntropy($entropy)->encode();
 
         return response()->json([
                 'data' => [
