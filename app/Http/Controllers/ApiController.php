@@ -18,6 +18,11 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 
 use Blockchain\Blockchain;
+
+use Blocker\Bip39\Bip39;
+use Blocker\Bip39\Util\Entropy;
+
+use Exception;
  
 class ApiController extends Controller
 {
@@ -100,11 +105,15 @@ class ApiController extends Controller
 
     public function createWallet(Request $request)
     {
-        //ToDo: Introduce entropy to improve passphrase security
-        $pass_phrase = $request->pass_phrase;
-
         try {
-            $wallet = $this->blockchain->Create->create($pass_phrase, $request->email, $request->label);
+            if (isset($request->private_key)) {
+                $bip39 = new Bip39('en');
+                $entropy = $bip39->decode($request->private_key);
+                $priv_hex = (string) $entropy;
+                $wallet = $this->blockchain->Create->createWithKey($request->password, $priv_hex, $request->email, $request->label);
+            } else {
+                $wallet = $this->blockchain->Create->create($request->password, $request->email, $request->label);
+            }
         } catch (Blockchain_ApiError $e) {
             return $e->getMessage();
         }
@@ -161,6 +170,28 @@ class ApiController extends Controller
 
         return response()->json([
                 'data' => $balance
+            ],
+            200
+        );
+    }
+
+    public function generatePrivateKey(Request $request)
+    {
+        $bits = (int) $request->bits ?? 128;
+
+        $bip39 = new Bip39('en');
+
+        //Generate 256-bit hexadecimal string
+        $hex = Entropy::random($bits);
+
+        $entropy = new Entropy($hex);
+
+        $wordSequence = $bip39->setEntropy($entropy)->encode();
+
+        return response()->json([
+                'data' => [
+                    'private_key_mnemonic' => $wordSequence
+                ]
             ],
             200
         );

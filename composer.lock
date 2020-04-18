@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0f460e30ec9bb5e92178cc39be0624ab",
+    "content-hash": "50590c22120cd4f87ebe56faa221afae",
     "packages": [
         {
             "name": "Blockchain/Blockchain",
@@ -163,6 +163,44 @@
                 "laravel"
             ],
             "time": "2020-03-11T21:05:07+00:00"
+        },
+        {
+            "name": "blocker/bip39",
+            "version": "0.10.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/blocker-solutions/bip39.git",
+                "reference": "b29341c63d1168ea8466888f0166b32f9e5bd64d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/blocker-solutions/bip39/zipball/b29341c63d1168ea8466888f0166b32f9e5bd64d",
+                "reference": "b29341c63d1168ea8466888f0166b32f9e5bd64d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gmp": "*",
+                "illuminate/support": "^5.6",
+                "php": ">=7.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Blocker\\Bip39\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Diego Hernandes",
+                    "email": "diego@hernandev.com"
+                }
+            ],
+            "description": "Easy to use, multi-language BIP39 implementation for PHP.",
+            "time": "2018-08-23T02:36:39+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
