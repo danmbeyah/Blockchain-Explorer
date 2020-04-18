@@ -186,8 +186,7 @@ class ApiController extends Controller
 
         return response()->json([
                 'data' => [
-                    'private_key_hex' => (string) $bip39->decode($wordSequence),
-                    'private_key_sequence' => $wordSequence
+                    'private_key_mnemonic' => $wordSequence
                 ]
             ],
             200
