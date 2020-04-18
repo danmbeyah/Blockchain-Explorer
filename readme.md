@@ -9,7 +9,7 @@ Implements the following:
 1. MYSQL DB
 
 ## Outcome
-1. I created a wallet and used the pass phrase and wallet ID to login on Blockchain.com.
+1. A wallet used to hold bitcoins and carry out transactions.
 
 ## Set up
 1. Clone repo and run composer install
@@ -22,7 +22,7 @@ Implements the following:
 1. POST: http://localhost:8000/api/login Body:{email,password}
 1. GET: http://localhost:8000/api/coins [fetch list of crypto currencies from Coin Gecko]
 1. GET: http://localhost:8000/api/coins/ethereum  [Get coin data and ticker data]
-1. POST: http://localhost:8000/api/wallet  Body:{email,label,pass_phrase}
+1. POST: http://localhost:8000/api/wallet  Body:{email,label,password,private_key}
 1. GET: http://localhost:8000/api/wallet/{wallet_id}
 1. GET: http://localhost:8000/api/wallet/{wallet_id}/address/{address}/balance
 
