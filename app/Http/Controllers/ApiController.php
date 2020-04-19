@@ -28,14 +28,14 @@ class ApiController extends Controller
 {
 	protected $user;
 
-    protected $client;
+    protected $geckoClient;
 
     protected $blockchain;
 	 
 	public function __construct()
 	{
 	    $this->user = JWTAuth::parseToken()->authenticate();
-        $this->client = new Client(['base_uri' => env('COINGECKO_BASE_URL')]);
+        $this->geckoClient = new Client(['base_uri' => env('COINGECKO_BASE_URL')]);
         $this->blockchain = new Blockchain('My_API_Key');
         
         $walletServiceUrl = env('WALLET_SERVICE_URL');
@@ -68,13 +68,24 @@ class ApiController extends Controller
     public function getCoins(Request $request)
     {
         try {
-            $response = $this->client->request('GET', 'coins/list');
+            $response = $this->geckoClient->request('GET', 'coins/list');
         } catch (RequestException $e) {
             return $e->getMessage();
         }
 
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        foreach ($data as $key => $value) {
+            //Upsert coins in DB
+            $coins = new Coins;
+            $coins = $coins->updateOrCreate(
+                ['symbol' => $value['symbol']],
+                ['name' => $value['name']]
+            );
+        }
+
         return response()->json([
-                'data' => $response->getBody()->getContents()
+                'data' => $data
             ],
             $response->getStatusCode()
         );
@@ -84,8 +95,8 @@ class ApiController extends Controller
     {
         try {
             $promises = [
-                'coin_data' => $this->client->getAsync('coins/' . $id),
-                'ticker_data'   => $this->client->getAsync('coins/' . $id . '/tickers')
+                'coin_data' => $this->geckoClient->getAsync('coins/' . $id),
+                'ticker_data'   => $this->geckoClient->getAsync('coins/' . $id . '/tickers')
             ];
         } catch (RequestException $e) {
             return $e->getMessage();
@@ -110,6 +121,7 @@ class ApiController extends Controller
                 $bip39 = new Bip39('en');
                 $entropy = $bip39->decode($request->private_key);
                 $priv_hex = (string) $entropy;
+                var_dump($priv_hex);die();
                 $wallet = $this->blockchain->Create->createWithKey($request->password, $priv_hex, $request->email, $request->label);
             } else {
                 $wallet = $this->blockchain->Create->create($request->password, $request->email, $request->label);

@@ -15,10 +15,11 @@ class CreateCoinsTable extends Migration
     {
         Schema::create('coins', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('coin_name');
-            $table->decimal('coin_price', 18,4);
-            $table->decimal('coin_market_cap', 18,4);
-            $table->string('coin_url');
+            $table->string('name');
+            $table->string('symbol');
+            $table->decimal('price', 18,4)->nullable();
+            $table->decimal('market_cap', 18,4)->nullable();
+            $table->string('logo_url')->nullable();
             $table->timestamps();
         });
     }
