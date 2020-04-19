@@ -19,7 +19,7 @@ class CreateCoinsTable extends Migration
             $table->string('symbol');
             $table->decimal('price', 18,4)->nullable();
             $table->decimal('market_cap', 18,4)->nullable();
-            $table->string('logo_url')->nullable();
+            $table->text('logo_url')->nullable();
             $table->timestamps();
         });
     }

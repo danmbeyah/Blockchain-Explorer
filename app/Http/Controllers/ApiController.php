@@ -28,18 +28,18 @@ class ApiController extends Controller
 {
 	protected $user;
 
-    protected $geckoClient;
+    protected $gecko_client;
 
     protected $blockchain;
 	 
 	public function __construct()
 	{
 	    $this->user = JWTAuth::parseToken()->authenticate();
-        $this->geckoClient = new Client(['base_uri' => env('COINGECKO_BASE_URL')]);
+        $this->gecko_client = new Client(['base_uri' => env('COINGECKO_BASE_URL')]);
         $this->blockchain = new Blockchain('My_API_Key');
         
-        $walletServiceUrl = env('WALLET_SERVICE_URL');
-        $this->blockchain->setServiceUrl($walletServiceUrl);
+        $wallet_service_url = env('WALLET_SERVICE_URL');
+        $this->blockchain->setServiceUrl($wallet_service_url);
 	}
 
     private function validateAccess($wallet_guid = null, $wallet_pass_phrase = null)
@@ -68,20 +68,39 @@ class ApiController extends Controller
     public function getCoins(Request $request)
     {
         try {
-            $response = $this->geckoClient->request('GET', 'coins/list');
+            $response = $this->gecko_client->request('GET', 'coins/list');
         } catch (RequestException $e) {
             return $e->getMessage();
         }
 
         $data = json_decode($response->getBody()->getContents(), true);
 
+        $i = 1;
         foreach ($data as $key => $value) {
+            //Fetch additional coin data for first 10 only. Remove check for all coins.
+            if ($i <= 10) {
+                try {
+                    $coin = $this->getCoin($value['id']);
+                    $coinData = $coin->getData();
+                } catch (RequestException $e) {
+                    //return $e->getMessage();
+                    continue;
+                }
+            }
+
             //Upsert coins in DB
             $coins = new Coins;
             $coins = $coins->updateOrCreate(
                 ['symbol' => $value['symbol']],
-                ['name' => $value['name']]
+                [
+                    'name' => $value['name'],
+                    'logo_url' => $coinData->data->image->thumb ?? null,
+                    'market_cap'=> $coinData->data->market_data->market_cap->usd ?? null,
+                    'price'=> $coinData->data->market_data->current_price->usd ?? null
+                ]
             );
+
+            $i++;
         }
 
         return response()->json([
@@ -94,23 +113,36 @@ class ApiController extends Controller
     public function getCoin($id)
     {
         try {
+            //Fetch coin and ticker data asynchronously...I promise
             $promises = [
-                'coin_data' => $this->geckoClient->getAsync('coins/' . $id),
-                'ticker_data'   => $this->geckoClient->getAsync('coins/' . $id . '/tickers')
+                'coin_data' => $this->gecko_client->getAsync('coins/' . $id),
+                'ticker_data'   => $this->gecko_client->getAsync('coins/' . $id . '/tickers')
             ];
         } catch (RequestException $e) {
             return $e->getMessage();
         }
 
+        //Settle made promise
         $responses = Promise\settle($promises)->wait();
 
+        //Assign responses
+        $data = null;
+        $status_code = 400;
+        if (isset($responses['coin_data']) && array_key_exists('value', $responses['coin_data'])) {
+            $data = json_decode($responses['coin_data']['value']->getBody()->getContents(), true);
+            $status_code = $responses['coin_data']['value']->getStatusCode();
+        }
+
+        $ticker_data = null;
+        if (isset($responses['ticker_data']) && array_key_exists('value', $responses['ticker_data'])) {
+            $ticker_data = json_decode($responses['ticker_data']['value']->getBody()->getContents(), true);
+        }
+
         return response()->json([
-                'data' => [
-                    'coin_data' => $responses['coin_data']['value']->getBody()->getContents(),
-                    'ticker_data' => $responses['ticker_data']['value']->getBody()->getContents()
-                ]
+                'data' => $data,
+                'ticker_data' => $ticker_data
             ],
-            $responses['coin_data']['value']->getStatusCode()
+            $status_code
         );
     }
 
@@ -121,7 +153,7 @@ class ApiController extends Controller
                 $bip39 = new Bip39('en');
                 $entropy = $bip39->decode($request->private_key);
                 $priv_hex = (string) $entropy;
-                var_dump($priv_hex);die();
+
                 $wallet = $this->blockchain->Create->createWithKey($request->password, $priv_hex, $request->email, $request->label);
             } else {
                 $wallet = $this->blockchain->Create->create($request->password, $request->email, $request->label);
@@ -198,11 +230,11 @@ class ApiController extends Controller
 
         $entropy = new Entropy($hex);
 
-        $wordSequence = $bip39->setEntropy($entropy)->encode();
+        $word_sequence = $bip39->setEntropy($entropy)->encode();
 
         return response()->json([
                 'data' => [
-                    'private_key_mnemonic' => $wordSequence
+                    'private_key_mnemonic' => $word_sequence
                 ]
             ],
             200
